@@ -62,7 +62,11 @@
         'tcp_backlog': 511,
         'tcp_keepalive': 0,
         'unixsocketperm': 755,
-        'user': 'redis'
+        'user': 'redis',
+        'servers': {
+            'slaveof_host' : '',
+            'slaveof_port' : ''
+        }
 	}
 }%}
 

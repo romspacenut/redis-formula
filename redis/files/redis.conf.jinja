@@ -1,0 +1,19 @@
+{% set port    = node.get('port', 6379) -%}
+
+# Redis config
+{% from "redis/map.jinja" import redis_settings with context %}
+
+daemonize yes
+pidfile /var/run/redis/node-{{ port }}.pid
+port {{ port }}
+
+{% if node.bind is defined %}
+bind {{ node.get('bind', '127.0.0.1') }}
+{% endif -%}
+
+dir /var/lib/redis/node-{{ port }}
+logfile /var/log/redis/node-{{ port }}.log
+
+{% if node.slaveof_host is defined %}
+slaveof {{ node.slaveof_host }} {{ node.get('slaveof_port', 6379) }}
+{% endif -%}
