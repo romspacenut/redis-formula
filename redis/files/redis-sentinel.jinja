@@ -11,7 +11,8 @@
 # Description: redis-sentinel - Persistent key-value db
 ### END INIT INFO
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/redis-sentinel
+#DAEMON=/usr/bin/redis-sentinel
+DAEMON=/usr/local/redis-3.0.2/src/redis-sentinel
 DAEMON_ARGS=/etc/redis/sentinel.conf
 NAME=redis-sentinel
 DESC=redis-sentinel

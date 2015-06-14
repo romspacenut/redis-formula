@@ -15,5 +15,6 @@ dir /var/lib/redis/node-{{ port }}
 logfile /var/log/redis/node-{{ port }}.log
 
 {% if node.slaveof_host is defined %}
-slaveof {{ node.slaveof_host }} {{ node.get('slaveof_port', 6379) }}
+slaveof {{ node.slaveof_host }} {{ node.get('slaveof_port', 7000) }}
 {% endif -%}
+## Below is dynamic
