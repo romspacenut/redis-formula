@@ -69,9 +69,16 @@ redis-node-{{ port }}:
 
 {% for port, node in cluster.items() %}
 {% if node.get('slaveof_host') is defined %}
-add-redis-slave-{{ port }}:
+redis-slaveof-{{ port }}:
   cmd.wait:
     - name: redis-cli -p {{ port }} SLAVEOF {{ node.get('slaveof_host') }} {{ node.get('slaveof_port') }}
+    - cwd: /
+    - require:
+      - file: /etc/init.d/redis-node-{{ port }}
+{% else %}
+redis-slaveof-no-one-{{ port }}:
+  cmd.wait:
+    - name: redis-cli -p {{ port }} SLAVEOF NO ONE
     - cwd: /
     - require:
       - file: /etc/init.d/redis-node-{{ port }}
