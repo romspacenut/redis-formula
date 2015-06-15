@@ -3,6 +3,8 @@
 
 daemonize yes
 
+logfile /var/log/redis/sentinel.log
+
 sentinel monitor redis-{{ label }} {{ sentinel.master.host }} {{ sentinel.master.port }} 1
 sentinel down-after-milliseconds redis-{{ label }} 2000
 sentinel notification-script redis-{{ label }} /etc/redis/notification.sh
