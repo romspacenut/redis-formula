@@ -42,10 +42,9 @@ kill-redis-sentinel:
     - makedirs: True
     - template: jinja
     - source: salt://redis/files/redis-sentinel.jinja
-  cmd.wait: # manually restart sentinel
+  cmd.run: # manually restart sentinel
     - cwd: /
-    - names:
-      - service redis-sentinel start
+    - name: service redis-sentinel start
     - watch:
       - file: /etc/init.d/redis-sentinel
 
