@@ -8,9 +8,10 @@ include:
 {% set version      = redis_settings.version|default('3.0.2') -%}
 {% set root         = redis_settings.root|default('/usr/local') -%}
 
-stop-redis-server:
-  service.dead:
-    - name: redis-server
+kill-redis-server:
+  cmd.run:
+    - name: killall -9 redis-server
+    - cwd: /
 
 service-redis-node:
   file.managed:

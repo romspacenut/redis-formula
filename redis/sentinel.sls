@@ -31,9 +31,10 @@ update-redis-conf-owner:
     - default:
       sentinel: {{ sentinel }}
 
-stop-service-redis-sentinel:
-  service.dead:
-    - name: redis-sentinel
+kill-redis-sentinel:
+  cmd.run:
+    - name: killall -9 redis-sentinel
+    - cwd: /
 
 /etc/init.d/redis-sentinel:
   file.managed:
@@ -44,7 +45,7 @@ stop-service-redis-sentinel:
   cmd.wait: # manually restart sentinel
     - cwd: /
     - names:
-      - service redis-sentinel restart
+      - service redis-sentinel start
     - watch:
       - file: /etc/init.d/redis-sentinel
 
