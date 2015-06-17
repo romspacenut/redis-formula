@@ -8,22 +8,39 @@ include:
 {% set version      = redis_settings.version|default('3.0.2') -%}
 {% set root         = redis_settings.root|default('/usr/local') -%}
 
-kill-redis-server:
+# this is a hack until redis-node upstart is fixed
+kill-all-redis-nodes:
   cmd.run:
     - name: killall -9 redis-server
-    - cwd: /
-
-service-redis-node:
-  file.managed:
-    - name: /etc/init.d/redis-node
-    - mode: 755
-    - makedirs: True
-    - source: salt://redis/files/redis-node
 
 {% for port, node in cluster.items() %}
+service-redis-node-{{ port }}:
+  file.managed:
+    - name: /etc/init.d/redis-node-{{ port }}
+    - user: root
+    - mode: 0755
+    - makedirs: True
+    - source: salt://redis/files/redis-node.jinja
+
+usr-local-service-redis-node-{{ port }}:
+  file.managed:
+    - name: /usr/local/bin/redis-node-{{ port }}
+    - user: root
+    - mode: 0755
+    - makedirs: True
+    - source: salt://redis/files/redis-node.jinja
+
+usr-bin-service-redis-node-{{ port }}:
+  file.managed:
+    - name: /usr/bin/redis-node-{{ port }}
+    - user: root
+    - mode: 0755
+    - makedirs: True
+    - source: salt://redis/files/redis-node.jinja
+
 redis-conf-dir-{{ port }}:
   file.directory:
-    - user: redis
+    - user: root
     - name: /etc/redis/node-{{ port }}
     - makedirs: True
 
@@ -35,37 +52,37 @@ redis-conf-dir-{{ port }}:
 /etc/redis/node-{{ port }}/redis.conf:
   file.absent
 
-redis-node-{{ port }}:
+config-redis-node-{{ port }}:
   file.managed:
     - name: /etc/redis/node-{{ port }}/redis.conf
     - user: redis
+    - group: redis
     - mode: 755
     - makedirs: True
     - template: jinja
     - source: salt://redis/files/redis.conf.jinja
+    - require_in:
+      service: /etc/init.d/service-redis-node-{{ port }}
     - require:
       - file: redis-conf-dir-{{ port }}
 #      - cmd: redis-old-init-disable
     - default:
       node: {{ node }}
 
-/etc/init.d/redis-node-{{ port }}-stop:
-  cmd.run:
-    - name: /etc/init.d/redis-node-{{ port }} stop
-    - cwd: /
+#/etc/init.d/redis-node-{{ port }}:
+#  service.running:
+#    - enable: True
+#    - reload: True
+#    - restart: True
+#    - watch:
+#      - file: /etc/redis/node-{{ port }}/redis.conf
 
-/etc/init.d/redis-node-{{ port }}:
-  file.symlink:
-    - target: /etc/init.d/redis-node
-    - require:
-      - file: service-redis-node
-  service.running:
-    - name: redis-node-{{ port }}
-    - enable: True
-    - reload: True
-    - restart: True
+# this is a hack to restart a redis node until the upstart is fixed; should use service.running
+restart-redis-node-{{ port }}:
+  cmd.run:
+    - name: service redis-node-{{ port }} restart
     - watch:
-      - file: /etc/init.d/redis-node-{{ port }}
+      - file: /etc/redis/node-{{ port }}/redis.conf
 {% endfor %}
 
 {% for port, node in cluster.items() %}
