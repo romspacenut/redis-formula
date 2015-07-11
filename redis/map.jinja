@@ -66,6 +66,23 @@
         'servers': {
             'slaveof_host' : '',
             'slaveof_port' : ''
+        },
+        'cluster': {
+            'default': {
+                '7000': {
+                    'bind': '0.0.0.0',
+                    'port': 7000
+                }
+            }
+        },
+        'sentinel': {
+            'default': {
+                'port': 26379
+                'master': {
+                    'host': '10.20.1.153',
+                    'port': 7000
+                }
+            }
         }
 	}
 }%}

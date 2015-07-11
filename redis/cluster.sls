@@ -4,7 +4,7 @@ include:
 {% from "redis/map.jinja" import redis_settings with context %}
 
 {% set install_from = redis_settings.install_from -%}
-{% set cluster      = redis_settings.cluster.get(grains['id'], {}) -%}
+{% set cluster      = redis_settings.cluster.get(grains['id'], redis_settings.cluster.default) -%}
 {% set version      = redis_settings.version|default('3.0.2') -%}
 {% set root         = redis_settings.root|default('/usr/local') -%}
 
@@ -78,11 +78,11 @@ config-redis-node-{{ port }}:
 #      - file: /etc/redis/node-{{ port }}/redis.conf
 
 # this is a hack to restart a redis node until the upstart is fixed; should use service.running
-restart-redis-node-{{ port }}:
-  cmd.run:
-    - name: service redis-node-{{ port }} restart
-    - watch:
-      - file: /etc/redis/node-{{ port }}/redis.conf
+#restart-redis-node-{{ port }}:
+#  cmd.run:
+#    - name: service redis-node-{{ port }} restart
+#    - watch:
+#      - file: /etc/redis/node-{{ port }}/redis.conf
 {% endfor %}
 
 {% for port, node in cluster.items() %}
