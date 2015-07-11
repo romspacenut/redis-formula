@@ -78,11 +78,11 @@ config-redis-node-{{ port }}:
 #      - file: /etc/redis/node-{{ port }}/redis.conf
 
 # this is a hack to restart a redis node until the upstart is fixed; should use service.running
-#restart-redis-node-{{ port }}:
-#  cmd.run:
-#    - name: service redis-node-{{ port }} restart
-#    - watch:
-#      - file: /etc/redis/node-{{ port }}/redis.conf
+restart-redis-node-{{ port }}:
+  cmd.run:
+    - name: service redis-node-{{ port }} restart
+    - watch:
+      - file: /etc/redis/node-{{ port }}/redis.conf
 {% endfor %}
 
 {% for port, node in cluster.items() %}
