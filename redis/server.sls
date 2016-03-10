@@ -31,7 +31,8 @@ redis_user:
     - name: {{ user }}
     - gid_from_name: True
     - home: {{ home }}
-    - group: {{ group }}
+    - groups:
+      - {{ group }}
     - require:
       - group: redis_group
 
