@@ -12,6 +12,7 @@ include:
 kill-all-redis-nodes:
   cmd.run:
     - name: killall -9 redis-server
+    - onlyif: ps xawww | grep "redis" | grep -v "grep" | grep -c .
 
 {% for port, node in cluster.items() %}
 service-redis-node-{{ port }}:
