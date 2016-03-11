@@ -35,6 +35,7 @@ kill-redis-sentinel:
   cmd.run:
     - name: killall -9 redis-sentinel
     - cwd: /
+    - onlyif: ps xawww | grep "redis-sentinel" | grep -v "grep" | grep -c .
 
 /etc/init.d/redis-sentinel:
   file.managed:
