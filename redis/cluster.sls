@@ -1,12 +1,10 @@
-include:
-  - redis.common
-
 {% from "redis/map.jinja" import redis_settings with context %}
 
-{% set install_from = redis_settings.install_from -%}
-{% set cluster      = redis_settings.cluster.get(grains['id'], redis_settings.cluster.default) -%}
-{% set version      = redis_settings.version|default('3.0.2') -%}
-{% set root         = redis_settings.root|default('/usr/local') -%}
+{%- if redis_settings.cluster is defined %}
+include:
+  - redis.common
+  
+{% set cluster = redis_settings.cluster %}
 
 # this is a hack until redis-node upstart is fixed
 kill-all-redis-nodes:
@@ -103,3 +101,4 @@ redis-slaveof-no-one-{{ port }}:
       - file: /etc/init.d/redis-node-{{ port }}
 {% endif %}
 {% endfor %}
+{%- endif %}

@@ -66,30 +66,26 @@
         'servers': {
             'slaveof_host' : '',
             'slaveof_port' : ''
-        },
-        'cluster': {
-            'default': {
-                '7000': {
-                    'bind': '0.0.0.0',
-                    'port': 7000
-                }
-            }
-        },
-        'sentinel': {
-            'default': {
-                'port': 26379,
-                'master': {
-                    'host': '10.20.1.153',
-                    'port': 7000
-                }
-            }
         }
 	}
 }%}
+
+#cluster
+#  7000
+#    bind: '0.0.0.0'
+#    port: 7000
+#sentinel
+#  port: 26379
+#  master
+#    host: '10.20.1.153'
+#    port: 7000
 
 {# Merge os_map into default_settings dictionary #}
 {% do default_settings.redis.update(os_map) %}
 
 {# Update settings defaults from pillar data #}
-{% set redis_settings = salt['pillar.get']('redis', default=default_settings.redis,
-  merge=True) %}
+{% set redis_settings = salt['pillar.get']('redis', default=default_settings.redis, merge=True) %}
+
+{% set minion_settings = salt['pillar.get'](grains['id'], default={'redis':''}) %}
+
+{% do redis_settings.update(minion_settings.redis) %}

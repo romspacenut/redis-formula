@@ -1,12 +1,10 @@
+{% from "redis/map.jinja" import redis_settings with context %}
+
+{%- if redis_settings.sentinel is defined %}
 #include:
 #  - redis.common
 
-{% from "redis/map.jinja" import redis_settings with context %}
-
-{% set install_from = redis_settings.install_from -%}
-{% set sentinel     = redis_settings.sentinel.get(grains['id'], redis_settings.sentinel.default) -%}
-{% set version      = redis_settings.version|default('3.0.2') -%}
-{% set root         = redis_settings.root|default('/usr/local') -%}
+{% set sentinel = redis_settings.sentinel %}
 
 update-redis-conf-owner:
   file.managed:
@@ -57,3 +55,4 @@ kill-redis-sentinel:
 #    - restart: True
 #    - watch:
 #      - file: /etc/redis/sentinel.conf
+{%- endif %}

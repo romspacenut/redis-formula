@@ -1,13 +1,9 @@
 {% from "redis/map.jinja" import redis_settings with context %}
 
-
-{% set install_from   = redis_settings.install_from -%} 
-
-
-{% if install_from == 'source' %}
-{% set version = redis_settings.version|default('3.0.2') -%}
-{% set checksum = redis_settings.checksum|default('sha1=a38755fe9a669896f7c5d8cd3ebbf76d59712002') -%}
-{% set root = redis_settings.root|default('/usr/local') -%}
+{% if redis_settings.install_from == 'source' %}
+{% set version  = redis_settings.version|default('3.2.3') -%}
+{% set checksum = redis_settings.checksum|default('sha1=92d6d93ef2efc91e595c8bf578bf72baff397507') -%}
+{% set root     = redis_settings.root|default('/usr/local') -%}
 
 {# there is a missing config template for version 2.8.8 #}
 
@@ -24,7 +20,6 @@ redis-dependencies:
         - libxml2-dev
     {% endif %}
 
-
 get-redis:
   file.managed:
     - name: {{ root }}/redis-{{ version }}.tar.gz
@@ -39,7 +34,6 @@ get-redis:
     - watch:
       - file: get-redis
 
-
 make-and-install-redis:
   cmd.wait:
     - cwd: {{ root }}/redis-{{ version }}
@@ -48,17 +42,11 @@ make-and-install-redis:
       - make install
     - watch:
       - cmd: get-redis
-
-
-{% elif install_from == 'package' %}
-
-
+{% elif redis_settings.install_from == 'package' %}
 install-redis:
   pkg.installed:
     - name: {{ redis_settings.pkg_name }}
     {% if redis_settings.version is defined %}
     - version: {{ redis_settings.version }}
     {% endif %}
-
-
 {% endif %}

@@ -1,30 +1,26 @@
 include:
   - redis.common
 
-
 {% from "redis/map.jinja" import redis_settings with context %}
 
-{% set cfg_version    = redis_settings.cfg_version -%}
-{% set cfg_name       = redis_settings.cfg_name -%}
-{% set install_from   = redis_settings.install_from -%}
-{% set pkg_name       = redis_settings.pkg_name -%}
-{% set svc_name       = redis_settings.svc_name -%}
-{% set svc_state      = redis_settings.svc_state -%}
-{% set svc_onboot     = redis_settings.svc_onboot -%}
-
+{% set cfg_version    = redis_settings.cfg_version %}
+{% set cfg_name       = redis_settings.cfg_name %}
+{% set install_from   = redis_settings.install_from %}
+{% set pkg_name       = redis_settings.pkg_name %}
+{% set svc_name       = redis_settings.svc_name %}
+{% set svc_state      = redis_settings.svc_state %}
+{% set svc_onboot     = redis_settings.svc_onboot %}
 
 {% if install_from == 'source' %}
 
-
-{% set user           = redis_settings.user -%}
-{% set group          = redis_settings.group -%}
-{% set home           = redis_settings.home -%}
-{% set bin            = redis_settings.bin -%}
+{% set user           = redis_settings.user %}
+{% set group          = redis_settings.group %}
+{% set home           = redis_settings.home %}
+{% set bin            = redis_settings.bin %}
 
 redis_group:
   group.present:
     - name: {{ group }}
-
 
 redis_user:
   user.present:
@@ -35,7 +31,6 @@ redis_user:
       - {{ group }}
     - require:
       - group: redis_group
-
 
 redis-init-script:
   file.managed:
@@ -52,13 +47,11 @@ redis-init-script:
     - require:
       - sls: redis.common
 
-
 redis-old-init-disable:
   cmd.wait:
     - name: update-rc.d -f redis-server remove
     - watch:
       - file: redis-init-script
-
 
 redis-log-dir:
   file.directory:
@@ -69,7 +62,6 @@ redis-log-dir:
     - makedirs: True
     - require:
       - user: redis_user
-
 
 redis-server:
   file.managed:
@@ -85,11 +77,7 @@ redis-server:
       - file: redis-init-script
       - cmd: redis-old-init-disable
       - file: redis-server
-
-
 {% else %}
-
-
 redis_config:
   file.managed:
     - name: {{ cfg_name }}
@@ -97,7 +85,6 @@ redis_config:
     - source: salt://redis/files/redis-{{ cfg_version }}.conf.jinja
     - require:
       - pkg: {{ pkg_name }}
-
 
 redis_service:
   service.{{ svc_state }}:
@@ -107,6 +94,4 @@ redis_service:
       - file: {{ cfg_name }}
     - require:
       - pkg: {{ pkg_name }}
-
-
 {% endif %}
