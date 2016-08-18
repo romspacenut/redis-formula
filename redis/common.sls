@@ -43,6 +43,14 @@ make-and-install-redis:
     - watch:
       - cmd: get-redis
 {% elif redis_settings.install_from == 'package' %}
+redis-repo:
+  pkgrepo.managed:
+    - ppa: {{ redis_settings.pkg_ppa }}
+    - require_in:
+      - pkg: install-redis
+    - watch_in:
+      - pkg: install-redis
+
 install-redis:
   pkg.installed:
     - name: {{ redis_settings.pkg_name }}

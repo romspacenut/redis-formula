@@ -2,6 +2,7 @@
     'Debian': {
         'pkg_name': 'redis-server',
         'svc_name': 'redis-server',
+        'pkg_ppa' : 'chris-lea/redis-server',
         'cfg_name': '/etc/redis/redis.conf',
         'cfg_version': salt['grains.filter_by']({
 	  'wheezy': '2.4',
